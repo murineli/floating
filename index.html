@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Floating Teste</title>
-    <script src="https://cdn.pipedriveassets.com/pd-widgets/sdk/v1/pipedrive-ui-sdk.js"></script>
-  </head>
-  <body>
-    <h1>Floating Window</h1>
-    <p>Carregando contexto...</p>
+<head>
+  <meta charset="utf-8">
+  <title>Discador Pipedrive</title>
+  <script src="https://cdn.pipedriveassets.com/pd-widgets/sdk/v1/pipedrive-ui-sdk.js"></script>
+</head>
+<body>
+<h3>Discador Pipedrive → Asterisk</h3>
 
-    <script>
-      const sdk = new window.pipedriveUI.App();
+<input id="number" placeholder="Número (ex: +5511999999999)">
+<button id="callBtn">Discar</button>
 
-      // Inicia a comunicação com o Pipedrive
-      sdk.initialize().then(data => {
-        console.log("Contexto recebido:", data);
-        document.body.insertAdjacentHTML("beforeend", `
-          <p>Deal ID: ${data?.deal?.id || "nenhum"}</p>
-          <p>User: ${data?.user?.name || "desconhecido"}</p>
-        `);
-      });
-    </script>
-  </body>
+<p>ID do Lead: <span id="leadId"></span></p>
+
+<script>
+const sdk = new window.pipedriveUI.App();
+
+// Recebe contexto do Pipedrive
+sdk.initialize().then(data => {
+  document.getElementById("leadId").innerText = data?.deal?.id || "nenhum";
+});
+
+// Chamada para backend (exemplo)
+document.getElementById("callBtn").addEventListener("click", () => {
+  const number = document.getElementById("number").value;
+  fetch("https://seu-backend.com/api/v1/call", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      crm: "pipedrive",
+      destination: number,
+      dealId: document.getElementById("leadId").innerText
+    })
+  });
+});
+</script>
+</body>
 </html>
